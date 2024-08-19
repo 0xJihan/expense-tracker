@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Expense Tracker</string>
+    <string name="view_all"><b><u>View All</u></b></string>
+
+    <string-array name="filterType">
+        <item>All</item>
+        <item>Income</item>
+        <item>Expense</item>
+    </string-array>
+
+</resources>
