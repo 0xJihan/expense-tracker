@@ -66,11 +66,21 @@ class HomeFragment(private val viewPager2: ViewPager2) : Fragment() {
         }
 
         viewModel.totalIncome.observe(viewLifecycleOwner) {
-            animateNumberChange(binding.tvTotalIncome.text.toString().toFloat(), it.toFloat(), 1000, binding.tvTotalIncome)
+            animateNumberChange(
+                binding.tvTotalIncome.text.toString().toFloat(),
+                it.toFloat(),
+                1000,
+                binding.tvTotalIncome
+            )
         }
 
         viewModel.totalExpense.observe(viewLifecycleOwner) {
-            animateNumberChange(binding.tvTotalExpense.text.toString().toFloat(), it.toFloat(), 1000, binding.tvTotalExpense)
+            animateNumberChange(
+                binding.tvTotalExpense.text.toString().toFloat(),
+                it.toFloat(),
+                2000,
+                binding.tvTotalExpense
+            )
         }
 
         viewModel.totalBalance.observe(viewLifecycleOwner) {
@@ -93,13 +103,22 @@ class HomeFragment(private val viewPager2: ViewPager2) : Fragment() {
             if (amountStr.isNotEmpty() && notes.isNotEmpty()) {
                 try {
                     val amount = amountStr.toFloat()
-                    viewModel.insertInfo(Information(0, amount, notes, item.chipIncome.isChecked, Date()))
+                    viewModel.insertInfo(
+                        Information(
+                            0,
+                            amount,
+                            notes,
+                            item.chipIncome.isChecked,
+                            Date()
+                        )
+                    )
                     dialog.dismiss()
                 } catch (e: NumberFormatException) {
                     Toast.makeText(requireContext(), "Invalid amount", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
 
@@ -114,7 +133,7 @@ class HomeFragment(private val viewPager2: ViewPager2) : Fragment() {
         )
 
         val pieDataSet = PieDataSet(entries, "").apply {
-            setColors(ColorTemplate.MATERIAL_COLORS.toList())
+            colors = ColorTemplate.MATERIAL_COLORS.toList()
             valueTextColor = Color.BLACK
             valueTextSize = 14f
         }
@@ -132,7 +151,12 @@ class HomeFragment(private val viewPager2: ViewPager2) : Fragment() {
         }
     }
 
-    private fun animateNumberChange(startValue: Float, endValue: Float, duration: Long, view: TextView) {
+    private fun animateNumberChange(
+        startValue: Float,
+        endValue: Float,
+        duration: Long,
+        view: TextView
+    ) {
         ValueAnimator.ofFloat(startValue, endValue).apply {
             this.duration = duration
             addUpdateListener { animation ->
