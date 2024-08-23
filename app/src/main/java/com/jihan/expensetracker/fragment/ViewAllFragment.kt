@@ -8,7 +8,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.jihan.expensetracker.Adapter.RecyclerViewAdapter
+import com.jihan.expensetracker.adapter.RecyclerViewAdapter
 import com.jihan.expensetracker.R
 import com.jihan.expensetracker.databinding.FragmentViewAllBinding
 import com.jihan.expensetracker.model.Repository
@@ -28,7 +28,8 @@ class ViewAllFragment : Fragment() {
         binding = FragmentViewAllBinding.inflate(inflater, container, false)
 
         val infoDao = InformationDatabase.getDatabase(requireContext()).getDao()
-        viewModel = ViewModelProvider(this, ViewModelFactory(Repository(infoDao)))[ViewModel::class.java]
+        viewModel =
+            ViewModelProvider(this, ViewModelFactory(Repository(infoDao)))[ViewModel::class.java]
 
         adapter = RecyclerViewAdapter(emptyList(), viewModel)
         binding.viewAllRecyclerView.adapter = adapter
@@ -36,12 +37,17 @@ class ViewAllFragment : Fragment() {
         setupSpinner()
         observeData()
 
+
+
         return binding.root
     }
 
+    // =======================================================================================
+
     private fun setupSpinner() {
         val filterType = resources.getStringArray(R.array.filterType)
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filterType)
+        val spinnerAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filterType)
         binding.spinnerFilter.adapter = spinnerAdapter
 
         binding.spinnerFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

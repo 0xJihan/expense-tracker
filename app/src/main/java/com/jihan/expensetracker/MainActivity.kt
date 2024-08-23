@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
-import com.jihan.expensetracker.Adapter.ViewPagerAdapter
+import com.jihan.expensetracker.adapter.ViewPagerAdapter
 import com.jihan.expensetracker.databinding.ActivityMainBinding
 import com.jihan.expensetracker.fragment.HomeFragment
 import com.jihan.expensetracker.fragment.ViewAllFragment

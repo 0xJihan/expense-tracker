@@ -1,4 +1,4 @@
-package com.jihan.expensetracker.Adapter
+package com.jihan.expensetracker.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
