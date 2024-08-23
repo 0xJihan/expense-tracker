@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
@@ -30,6 +31,7 @@ class RecyclerViewAdapter(
         private val tvNotes: TextView = itemView.findViewById(R.id.tvNotes)
         private val tvAmount: TextView = itemView.findViewById(R.id.tvAmount)
         private val tvDate: TextView = itemView.findViewById(R.id.tvDate)
+        private val imageView : ImageView = itemView.findViewById(R.id.imgIcon)
 
         // function for binding data to the views
 
@@ -40,9 +42,11 @@ class RecyclerViewAdapter(
             if (data.isIncome) {
                 tvAmount.text = "${data.amount} TK"
                 tvAmount.setTextColor(Color.GREEN)
+                imageView.setImageResource(R.drawable.up)
             } else {
                 tvAmount.text = "- ${data.amount} TK"
                 tvAmount.setTextColor(Color.RED)
+                imageView.setImageResource(R.drawable.down)
             }
 
         }
