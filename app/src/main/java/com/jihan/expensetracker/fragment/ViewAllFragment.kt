@@ -6,11 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.jihan.expensetracker.Adapter.RecyclerViewAdapter
 import com.jihan.expensetracker.R
 import com.jihan.expensetracker.databinding.FragmentViewAllBinding
@@ -22,7 +19,8 @@ import com.jihan.expensetracker.room.InformationDatabase
 class ViewAllFragment : Fragment() {
 
     private lateinit var binding: FragmentViewAllBinding
-
+    private lateinit var viewModel: ViewModel
+    private lateinit var adapter: RecyclerViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -30,82 +28,77 @@ class ViewAllFragment : Fragment() {
         binding = FragmentViewAllBinding.inflate(inflater, container, false)
 
         val infoDao = InformationDatabase.getDatabase(requireContext()).getDao()
+        viewModel = ViewModelProvider(this, ViewModelFactory(Repository(infoDao)))[ViewModel::class.java]
 
-        val viewModel =
-            ViewModelProvider(this, ViewModelFactory(Repository(infoDao)))[ViewModel::class.java]
+        adapter = RecyclerViewAdapter(emptyList(), viewModel)
+        binding.viewAllRecyclerView.adapter = adapter
 
-        binding.lifecycleOwner = this
-
-        val adapterAll = RecyclerViewAdapter(viewModel.arrayList, viewModel)
-        val adapterIncome = RecyclerViewAdapter(viewModel.incomeList, viewModel)
-        val adapterExpense = RecyclerViewAdapter(viewModel.expenseList, viewModel)
-
-
-        // setting adapter to spinner
-        val filterType = resources.getStringArray(R.array.filterType)
-        val spinnerAdapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filterType)
-        binding.spinnerFilter.adapter = spinnerAdapter
-
-
-        // spinner Item Selected Listener
-        binding.spinnerFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-
-                if (position == 0) {
-                    // setting adapter to recyclerView
-
-                    binding.viewAllRecyclerView.adapter = adapterAll
-
-                } else if (position == 1) {
-                    binding.viewAllRecyclerView.adapter =adapterIncome
-
-                } else {
-                    binding.viewAllRecyclerView.adapter =adapterExpense
-
-                }
-
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-
-            }
-
-        }
-
-
-        // observing data changes
-        viewModel.arrayList.observe(viewLifecycleOwner) {
-            adapterAll.notifyDataSetChanged()
-
-            // showing lottie if arrayList is empty
-            if (it.isNullOrEmpty()) {
-                binding.viewAllLottie.visibility = View.VISIBLE
-                binding.viewAllLottie.resumeAnimation()
-            } else {
-                binding.viewAllLottie.visibility = View.GONE
-                binding.viewAllLottie.pauseAnimation()
-            }
-        }
-
-
-        viewModel.incomeList.observe(viewLifecycleOwner){
-            adapterIncome.notifyDataSetChanged()
-
-        }
-
-        viewModel.expenseList.observe(viewLifecycleOwner){
-            adapterExpense.notifyDataSetChanged()
-
-        }
-
-
-
-
+        setupSpinner()
+        observeData()
 
         return binding.root
     }
 
+    private fun setupSpinner() {
+        val filterType = resources.getStringArray(R.array.filterType)
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filterType)
+        binding.spinnerFilter.adapter = spinnerAdapter
+
+        binding.spinnerFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                updateRecyclerViewBasedOnFilter(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Optional: Handle case when nothing is selected
+            }
+        }
+    }
+
+    private fun updateRecyclerViewBasedOnFilter(position: Int) {
+        val list = when (position) {
+            1 -> viewModel.incomeList.value
+            2 -> viewModel.expenseList.value
+            else -> viewModel.arrayList.value
+        }
+        list?.let {
+            adapter.updateList(it)
+            updateLottieVisibility(it.isEmpty())
+        }
+    }
+
+    private fun observeData() {
+        viewModel.arrayList.observe(viewLifecycleOwner) {
+            if (binding.spinnerFilter.selectedItemPosition == 0) {
+                adapter.updateList(it)
+                updateLottieVisibility(it.isEmpty())
+            }
+        }
+
+        viewModel.incomeList.observe(viewLifecycleOwner) {
+            if (binding.spinnerFilter.selectedItemPosition == 1) {
+                adapter.updateList(it)
+                updateLottieVisibility(it.isEmpty())
+            }
+        }
+
+        viewModel.expenseList.observe(viewLifecycleOwner) {
+            if (binding.spinnerFilter.selectedItemPosition == 2) {
+                adapter.updateList(it)
+                updateLottieVisibility(it.isEmpty())
+            }
+        }
+    }
+
+    private fun updateLottieVisibility(isEmpty: Boolean) {
+        if (isEmpty) {
+            binding.viewAllLottie.visibility = View.VISIBLE
+            binding.viewAllLottie.playAnimation()
+        } else {
+            binding.viewAllLottie.visibility = View.GONE
+            binding.viewAllLottie.pauseAnimation()
+        }
+    }
 }

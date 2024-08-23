@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.jihan.expensetracker.R
 import com.jihan.expensetracker.databinding.ItemInsertBinding
@@ -20,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 class RecyclerViewAdapter(
-    private var liveData: LiveData<List<Information>>,
+    private var myList: List<Information>,
     private val viewModel: com.jihan.expensetracker.model.ViewModel
 ) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
@@ -31,7 +30,7 @@ class RecyclerViewAdapter(
         private val tvNotes: TextView = itemView.findViewById(R.id.tvNotes)
         private val tvAmount: TextView = itemView.findViewById(R.id.tvAmount)
         private val tvDate: TextView = itemView.findViewById(R.id.tvDate)
-        private val imageView : ImageView = itemView.findViewById(R.id.imgIcon)
+        private val imageView: ImageView = itemView.findViewById(R.id.imgIcon)
 
         // function for binding data to the views
 
@@ -67,13 +66,13 @@ class RecyclerViewAdapter(
     }
 
     override fun getItemCount(): Int {
-        if (liveData.value == null) {
+        if (myList.isNullOrEmpty()) {
             return 0
-        } else return liveData.value!!.size
+        } else return myList.size
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(liveData.value!![position])
+        holder.bind(myList[position])
 
         holder.itemView.rootView.setOnLongClickListener {
 
@@ -88,15 +87,14 @@ class RecyclerViewAdapter(
                     R.id.menu_item_edit -> {
 
                         showAlertDialog(
-                            holder.itemView.context,
-                            liveData.value!![position]
+                            holder.itemView.context, myList[position]
                         )
 
 
                     }
 
                     R.id.menu_item_delete -> {
-                        viewModel.deleteInfo(liveData.value!![position])
+                        viewModel.deleteInfo(myList[position])
                         Toast.makeText(
                             holder.itemView.context, "Item Deleted Successfully", Toast.LENGTH_SHORT
                         ).show()
@@ -165,6 +163,11 @@ class RecyclerViewAdapter(
 
     }
 
+
+    fun updateList(list:List<Information>){
+        this.myList = list
+        notifyDataSetChanged()
+    }
 
 
 }

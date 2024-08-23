@@ -14,12 +14,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.github.mikephil.charting.utils.Utils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jihan.expensetracker.Adapter.RecyclerViewAdapter
-import com.jihan.expensetracker.MainActivity
 import com.jihan.expensetracker.databinding.FragmentHomeBinding
 import com.jihan.expensetracker.databinding.ItemInsertBinding
 import com.jihan.expensetracker.model.Repository
@@ -30,7 +27,7 @@ import com.jihan.expensetracker.room.InformationDatabase
 import java.util.Date
 
 
-class HomeFragment (private val viewPager2: ViewPager2) : Fragment() {
+class HomeFragment(private val viewPager2: ViewPager2) : Fragment() {
 
 
     private lateinit var binding: FragmentHomeBinding
@@ -54,13 +51,13 @@ class HomeFragment (private val viewPager2: ViewPager2) : Fragment() {
         binding.lifecycleOwner = this
 
         // setting recycler view adapter
-        val adapter = RecyclerViewAdapter(viewModel.recentArrayList, viewModel)
+        val adapter = RecyclerViewAdapter(emptyList(), viewModel)
         binding.recyclerView.adapter = adapter
 
 
         // observing recent array list
         viewModel.recentArrayList.observe(viewLifecycleOwner) {
-            adapter.notifyDataSetChanged()
+            adapter.updateList(it)
 
             // Show or hide the Lottie animation based on the list's size
             if (it.isNullOrEmpty()) {
@@ -76,13 +73,13 @@ class HomeFragment (private val viewPager2: ViewPager2) : Fragment() {
 
         viewModel.totalIncome.observe(viewLifecycleOwner) {
             val startValue = binding.tvTotalIncome.text.toString().toFloat()
-            animateNumberChange(startValue,it.toFloat(),1000,binding.tvTotalIncome)
+            animateNumberChange(startValue, it.toFloat(), 1000, binding.tvTotalIncome)
         }
 
 
         viewModel.totalExpense.observe(viewLifecycleOwner) {
             val startValue = binding.tvTotalExpense.text.toString().toFloat()
-            animateNumberChange(startValue,it.toFloat(),1000,binding.tvTotalExpense)
+            animateNumberChange(startValue, it.toFloat(), 1000, binding.tvTotalExpense)
         }
 
 
@@ -101,7 +98,7 @@ class HomeFragment (private val viewPager2: ViewPager2) : Fragment() {
 
 
 
-        binding.tvViewAll.setOnClickListener{
+        binding.tvViewAll.setOnClickListener {
             viewPager2.currentItem = 1
         }
 
@@ -161,9 +158,6 @@ class HomeFragment (private val viewPager2: ViewPager2) : Fragment() {
     }
 
 
-
-
-
     private fun loadPieChart() {
         val pieChart = binding.piechart
 
@@ -208,8 +202,12 @@ class HomeFragment (private val viewPager2: ViewPager2) : Fragment() {
     }
 
 
-
-    private fun animateNumberChange(startValue: Float, endValue: Float, duration: Long,view:TextView) {
+    private fun animateNumberChange(
+        startValue: Float,
+        endValue: Float,
+        duration: Long,
+        view: TextView
+    ) {
         val animator = ValueAnimator.ofFloat(startValue, endValue)
         animator.duration = duration
         animator.addUpdateListener { animation ->
