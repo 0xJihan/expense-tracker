@@ -12,10 +12,20 @@
         tools:context=".fragment.ViewAllFragment">
 
 
+        <androidx.appcompat.widget.SearchView
+            android:layout_width="0dp"
+            android:id="@+id/searchView"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/spinnerFilter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
         <Spinner
             android:id="@+id/spinnerFilter"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -1,14 +1,15 @@
 package com.jihan.expensetracker.fragment
 
+import RecyclerViewAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.jihan.expensetracker.adapter.RecyclerViewAdapter
 import com.jihan.expensetracker.R
 import com.jihan.expensetracker.databinding.FragmentViewAllBinding
 import com.jihan.expensetracker.model.Repository
@@ -37,12 +38,19 @@ class ViewAllFragment : Fragment() {
         setupSpinner()
         observeData()
 
+        binding.searchView.setOnQueryTextListener(object : OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
 
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter(newText.orEmpty())
+                return true
+            }
+        })
 
         return binding.root
     }
-
-    // =======================================================================================
 
     private fun setupSpinner() {
         val filterType = resources.getStringArray(R.array.filterType)
@@ -108,3 +116,4 @@ class ViewAllFragment : Fragment() {
         }
     }
 }
+
